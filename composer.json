@@ -1,0 +1,16 @@
+{
+    "name": "yanpapayan/yii2-blockchain",
+    "description": "Yii2 adapter to work with the Blockchain API",
+    "type": "yii2-extension",
+    "require-dev": {
+    },
+    "authors": [
+        {
+            "name": "yanpapayan",
+            "email": "yankuznecov@yandex.ru"
+        }
+    ],
+    "require": {
+        "blockchain/blockchain": "^1.3"
+    }
+}
