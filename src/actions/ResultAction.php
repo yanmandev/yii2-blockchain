@@ -3,7 +3,6 @@
 namespace yanpapayan\blockchain\actions;
 
 use yanpapayan\blockchain\ApiAdapter;
-use yarcode\advcash\Merchant;
 use yii\base\Action;
 use yii\base\InvalidConfigException;
 

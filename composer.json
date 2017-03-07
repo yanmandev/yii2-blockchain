@@ -2,15 +2,37 @@
     "name": "yanpapayan/yii2-blockchain",
     "description": "Yii2 adapter to work with the Blockchain API",
     "type": "yii2-extension",
-    "require-dev": {
-    },
+    "homepage": "https://github.com/yanpapayan/yii2-blockchain",
     "authors": [
         {
-            "name": "yanpapayan",
-            "email": "yankuznecov@yandex.ru"
+            "name": "Yan Kuznetsov",
+            "email": "yankuznecov@ya.ru",
+            "homepage": "https://github.com/yanpapayan",
+            "role": "Developer"
         }
     ],
+    "keywords": [
+        "yii2",
+        "blockchain",
+        "yii2-extension",
+        "api"
+    ],
+    "support": {
+        "issues": "https://github.com/yanpapayan/yii2-blockchain/issues",
+        "source": "https://github.com/yanpapayan/yii2-blockchain"
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+    },
     "require": {
-        "blockchain/blockchain": "^1.3"
+        "php":">=5.4.0",
+        "yiisoft/yii2": "~2",
+        "blockchain/blockchain": "^1.3",
+        "2amigos/yii2-qrcode-helper": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "yanpapayan\\blockchain\\": "./src"
+        }
     }
 }
