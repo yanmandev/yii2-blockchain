@@ -40,7 +40,7 @@ class ResultAction extends Action
     public function run()
     {
         try {
-            $this->api->processResult(\Yii::$app->request->post());
+            $this->api->processResult(\Yii::$app->request->getQueryParams());
         } catch (\Exception $e) {
             if (!$this->silent) {
                 throw $e;

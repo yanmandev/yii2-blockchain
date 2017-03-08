@@ -10,20 +10,21 @@ namespace yanpapayan\blockchain;
 use Blockchain\Blockchain;
 use yanpapayan\blockchain\events\GatewayEvent;
 use yii\base\Component;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
 
 class ApiAdapter extends Component
 {
     const LOG_CATEGORY = 'Blockchain';
+    const COUNT_CONFIRMATIONS_SUCCESS = 4;
+    const RESPONSE_MESSAGE_SUCCESS = '*ok*';
+    const RESPONSE_MESSAGE_FAILURE = '*bad*';
 
     public $apiKey;
     public $xPub;
-    public $callbackUrl;
-
     public $resultUrl;
-    public $successUrl;
-    public $failureUrl;
 
     /** @var  Blockchain */
     protected $api;
@@ -38,6 +39,7 @@ class ApiAdapter extends Component
         parent::init();
 
         $this->api = new Blockchain($this->apiKey);
+        $this->resultUrl = Url::to($this->resultUrl, true);
     }
 
     /**
@@ -49,7 +51,7 @@ class ApiAdapter extends Component
     public function processResult($data)
     {
         if (!$this->checkHash($data)) {
-            throw new ForbiddenHttpException('Hash error');
+            //throw new ForbiddenHttpException('Hash error');
         }
 
         $event = new GatewayEvent(['gatewayData' => $data]);
@@ -83,5 +85,19 @@ class ApiAdapter extends Component
 
     public function checkHash($data)
     {
+    }
+
+    /**
+     * @param array $callbackData
+     * @return array|\Blockchain\V2\Receive\ReceiveResponse
+     * @throws \Blockchain\Exception\Error
+     * @throws \Blockchain\Exception\HttpError
+     */
+    public function generateReceivingAddress($callbackData = [])
+    {
+        $params = ArrayHelper::merge([$this->resultUrl], $callbackData);
+        // todo: for test
+        return ['address' => md5('test'), 'callback' => Url::to($params, true)];
+        return $this->api->ReceiveV2->generate($this->apiKey, $this->xPub, Url::to($params, true));
     }
 }
