@@ -49,10 +49,6 @@ class InvoiceForm extends Widget
      */
     public function run()
     {
-        $this->view->registerJs(<<<'JS'
-JS
-            , View::POS_READY);
-
         $receivingAddress = $this->api->generateReceivingAddress(['invoice_id' => $this->invoiceId])['address'];
         $qrCodeUrl = Url::to(ArrayHelper::merge([$this->qrCodeAction], [
             'address' => $receivingAddress,
