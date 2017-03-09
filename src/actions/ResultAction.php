@@ -27,7 +27,7 @@ class ResultAction extends Action
     {
         $this->api = \Yii::$app->get($this->componentName);
         if (!$this->api instanceof ApiAdapter) {
-            throw new InvalidConfigException('Invalid ApiAdapter component configuration');
+            throw new InvalidConfigException('Invalid component configuration');
         }
 
         parent::init();
@@ -40,7 +40,7 @@ class ResultAction extends Action
     public function run()
     {
         try {
-            $this->api->processResult(\Yii::$app->request->getQueryParams());
+            return $this->api->processResult(\Yii::$app->request->getQueryParams());
         } catch (\Exception $e) {
             if (!$this->silent) {
                 throw $e;

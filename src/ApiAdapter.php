@@ -19,11 +19,13 @@ class ApiAdapter extends Component
 {
     const LOG_CATEGORY = 'Blockchain';
     const COUNT_CONFIRMATIONS_SUCCESS = 4;
+
     const RESPONSE_MESSAGE_SUCCESS = '*ok*';
     const RESPONSE_MESSAGE_FAILURE = '*bad*';
 
     public $apiKey;
     public $xPub;
+    public $secret;
     public $resultUrl;
 
     /** @var  Blockchain */
@@ -35,6 +37,8 @@ class ApiAdapter extends Component
     public function init()
     {
         assert(isset($this->apiKey));
+        assert(isset($this->xPub));
+        assert(isset($this->secret));
 
         parent::init();
 
@@ -43,61 +47,47 @@ class ApiAdapter extends Component
     }
 
     /**
-     * @param array $data
-     * @return bool
-     * @throws HttpException
+     * @param $data
+     * @return string
      * @throws \yii\db\Exception
      */
     public function processResult($data)
     {
-        if (!$this->checkHash($data)) {
-            //throw new ForbiddenHttpException('Hash error');
-        }
-
         $event = new GatewayEvent(['gatewayData' => $data]);
 
         $this->trigger(GatewayEvent::EVENT_PAYMENT_REQUEST, $event);
         if (!$event->handled) {
-            throw new HttpException(503, 'Error processing request');
+            return static::RESPONSE_MESSAGE_FAILURE;
         }
 
         $transaction = \Yii::$app->getDb()->beginTransaction();
         try {
             $this->trigger(GatewayEvent::EVENT_PAYMENT_SUCCESS, $event);
             $transaction->commit();
+            return static::RESPONSE_MESSAGE_SUCCESS;
         } catch (\Exception $e) {
             $transaction->rollback();
             \Yii::error('Payment processing error: ' . $e->getMessage(), static::LOG_CATEGORY);
-            throw new HttpException(503, 'Error processing request');
         }
 
-        return true;
-    }
-
-    /**
-     * @param $invoiceId
-     * @return string
-     */
-    public function generateSecretKey($invoiceId)
-    {
-        return md5($invoiceId . ':' . $this->apiKey);
-    }
-
-    public function checkHash($data)
-    {
+        return static::RESPONSE_MESSAGE_FAILURE;
     }
 
     /**
      * @param array $callbackData
-     * @return array|\Blockchain\V2\Receive\ReceiveResponse
+     * @return \Blockchain\V2\Receive\ReceiveResponse
      * @throws \Blockchain\Exception\Error
      * @throws \Blockchain\Exception\HttpError
      */
     public function generateReceivingAddress($callbackData = [])
     {
+        if (!isset($callbackData['secret'])) {
+            $callbackData['secret'] = $this->secret;
+        }
         $params = ArrayHelper::merge([$this->resultUrl], $callbackData);
-        // todo: for test
+
+        // TODO: for test
         return ['address' => md5('test'), 'callback' => Url::to($params, true)];
-        return $this->api->ReceiveV2->generate($this->apiKey, $this->xPub, Url::to($params, true));
+        //return $this->api->ReceiveV2->generate($this->apiKey, $this->xPub, Url::to($params, true));
     }
 }
