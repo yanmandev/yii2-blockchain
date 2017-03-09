@@ -12,8 +12,6 @@ use yanpapayan\blockchain\events\GatewayEvent;
 use yii\base\Component;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-use yii\web\ForbiddenHttpException;
-use yii\web\HttpException;
 
 class ApiAdapter extends Component
 {
@@ -28,7 +26,10 @@ class ApiAdapter extends Component
     public $secret;
     public $resultUrl;
 
-    /** @var  Blockchain */
+    /**
+     * @see https://github.com/blockchain/api-v1-client-php
+     * @var Blockchain
+     */
     protected $api;
 
     /**

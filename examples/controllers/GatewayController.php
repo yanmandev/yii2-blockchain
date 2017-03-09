@@ -3,12 +3,14 @@
 namespace yanpapayan\blockchain\examples;
 
 use common\models\Invoice;
+use yanpapayan\blockchain\actions\QrCodeAction;
 use yanpapayan\blockchain\ApiAdapter;
 use yanpapayan\blockchain\actions\ResultAction;
 use yanpapayan\blockchain\events\GatewayEvent;
 use yii\helpers\ArrayHelper;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
+use yii\web\Response;
 
 class GatewayController extends Controller
 {
@@ -34,30 +36,40 @@ class GatewayController extends Controller
         $this->component->on(GatewayEvent::EVENT_PAYMENT_SUCCESS, [$this, 'handlePaymentSuccess']);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function actions()
     {
         return [
             'result' => [
                 'class' => ResultAction::className(),
                 'componentName' => $this->componentName,
-                'redirectUrl' => ['/billing'],
+                //'redirectUrl' => null,
             ],
-            'success' => [
-                'class' => ResultAction::className(),
-                'componentName' => $this->componentName,
-                'redirectUrl' => ['/billing'],
-                'silent' => true,
-            ],
-            'failure' => [
-                'class' => ResultAction::className(),
-                'componentName' => $this->componentName,
-                'redirectUrl' => ['/billing'],
-                'silent' => true,
+            'qr-code' => [
+                'class' => QrCodeAction::className(),
             ]
         ];
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => 'yii\filters\ContentNegotiator',
+                'formats' => [
+                    'application/json' => Response::FORMAT_RAW,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @see https://github.com/blockchain/receive-payments-demos/blob/master/php/callback.php
      * @param GatewayEvent $event
      * @return bool
      */
