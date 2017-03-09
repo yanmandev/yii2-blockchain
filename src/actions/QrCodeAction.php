@@ -29,6 +29,6 @@ class QrCodeAction extends Action
     public function run($address, $amount)
     {
         $format = new Bitcoin(['address' => $address, 'amount' => $amount]);
-        return QrCode::png($format->getText(), false, Enum::QR_ECLEVEL_L, 6);
+        return QrCode::png($format->getText(), false, Enum::QR_ECLEVEL_L, 6, 0);
     }
 }
